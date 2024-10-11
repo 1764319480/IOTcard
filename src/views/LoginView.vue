@@ -1,13 +1,19 @@
 <script setup lang="ts">
-import { onBeforeMount, ref } from 'vue';
-const captchaUrl = ref();
-// 获取验证码图片
-const getCaptchaImg = () => {
-  captchaUrl.value = '@/assets/images/test-captcha.png';
+import { ref } from 'vue';
+// @ts-ignore
+import VerifyCodeImg from '@/components/VerifyCodeImg.vue';
+// 基本变量
+const account = ref('');
+const alert_account = ref('');
+const pwd = ref('');
+const alert_pwd = ref('');
+const captcha = ref('');//验证码
+const captcha_true = ref('');//校验的验证码
+const alert_captcha = ref('');
+// 获取验证码
+const getVerifyCodeStr = (verifyCodeStr:string) => {
+  captcha_true.value = verifyCodeStr;
 }
-onBeforeMount(() => {
-  getCaptchaImg();
-})
 // 密码显示与隐藏
 const showpwd = ref(false);
 const eye_style = ref('close');
@@ -19,53 +25,59 @@ const showPwd = () => {
     eye_style.value = 'close';
   }
 }
-// 基本变量
-const account = ref('');
-const alert_account = ref();
-const pwd = ref('');
-const alert_pwd = ref();
-const captcha = ref('');
-const alert_captcha = ref();
 //表单内容格式验证
-const checkContent = (option:string) => {
+const checkContent = (option: string) => {
   const regex = /^[a-zA-Z0-9]+$/;
-  switch(option) {
+  switch (option) {
     case '账号': {
-      if(account.value === '') {
+      if (account.value === '') {
         alert_account.value = '请输入账号';
-        return;
+        return false;
       }
       if (!regex.test(account.value) || account.value.length < 4 || account.value.length > 16) {
         alert_account.value = '输入的账号不正确';
-        return;
+        return false;
       }
       alert_account.value = '';
-      break;
+      return true;
     }
     case '密码': {
-      if(pwd.value === '') {
+      if (pwd.value === '') {
         alert_pwd.value = '请输入密码';
-        return;
+        return false;
       }
-      if(!regex.test(pwd.value)) {
+      if (!regex.test(pwd.value)) {
         alert_pwd.value = '请输入由字母或数字组成的密码';
-        return;
+        return false;
       }
-      if(pwd.value.length < 8 || pwd.value.length > 16) {
+      if (pwd.value.length < 8 || pwd.value.length > 16) {
         alert_pwd.value = '请输入8~16位的密码';
-        return;
+        return false;
       };
       alert_pwd.value = '';
-      break;
+      return true;
     }
     case '验证码': {
-      if(captcha.value === '') {
+      if (captcha.value === '') {
         alert_captcha.value = '请输入验证码';
-        return;
+        return false;
       }
       alert_captcha.value = '';
-      break;
+      return true;
     }
+  }
+}
+//登录
+const login = async () => {
+  const check1 = checkContent('账号');
+  const check2 = checkContent('密码');
+  const check3 = checkContent('验证码');
+  if (!check1 || !check2 || !check3) {
+    return;
+  }
+  if (captcha.value != captcha_true.value) {
+    alert_captcha.value = '验证码错误';
+    return;
   }
 }
 </script>
@@ -105,12 +117,12 @@ const checkContent = (option:string) => {
               </div>
             </div>
             <div>
-              <img src="@/assets/images/test-captcha.png" />
+              <VerifyCodeImg :canvasWidth="67" :canvasHeight="25" ref="verifyCodeImgRef" @getVerifyCodeStr="getVerifyCodeStr" />
             </div>
           </div>
           <p class="alert_p">{{ alert_captcha }}</p>
         </div>
-        <div>登录</div>
+        <div @click="login">登录</div>
       </div>
     </div>
   </div>
@@ -321,6 +333,7 @@ const checkContent = (option:string) => {
         .captcha_input {
           border: 0;
           margin-top: 24px;
+
           >div:nth-child(1) {
             width: 133px;
             height: 32px;

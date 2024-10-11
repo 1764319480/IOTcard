@@ -2,6 +2,11 @@
 import { ref } from 'vue';
 // @ts-ignore
 import VerifyCodeImg from '@/components/VerifyCodeImg.vue';
+// @ts-ignore
+import sha256 from 'crypto-js/sha256';
+// @ts-ignore
+import { userStore } from '@/stores/user';
+const userData = userStore();
 // 基本变量
 const account = ref('');
 const alert_account = ref('');
@@ -78,6 +83,18 @@ const login = async () => {
   if (captcha.value != captcha_true.value) {
     alert_captcha.value = '验证码错误';
     return;
+  }
+  const password = sha256(pwd.value).toString();
+  const result = await userData.login(account.value, password);
+  if(result === 1) {
+    alert('登录成功！')
+    //跳转逻辑
+  }else {
+    if ((result as string).startsWith('账号')) {
+      alert_pwd.value = result;
+    } else {
+      alert_account.value = result;
+    } 
   }
 }
 </script>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 // @ts-ignore
 import VerifyCodeImg from '@/components/VerifyCodeImg.vue';
 // @ts-ignore
@@ -97,6 +97,20 @@ const login = async () => {
     } 
   }
 }
+//批量添加enter点击事件
+onMounted(() => {
+    function keyEnter() {
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(node => {
+            node.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                  login();
+                }
+            })
+        })
+    }
+    keyEnter();
+})
 </script>
 
 <template>

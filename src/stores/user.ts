@@ -3,8 +3,7 @@ import { defineStore } from 'pinia';
 // @ts-ignore
 import axios from '@/utils/request';
 export const userStore = defineStore('user', () => {
-  const user = ref();
-  const token = ref();
+  const user = ref('user');
   // 登录
   const login = async (account:string, password:string) => {
     const res = await axios.post('/api/login', {
@@ -12,11 +11,13 @@ export const userStore = defineStore('user', () => {
       password
     })
     if(res.data.success) {
-      token.value = res.data;
       return 1;
     }else {
       return res.data.message;
     }
   }
-  return { user, token, login }
-})
+  return { user, login }
+},{
+  persist: true
+  }
+)

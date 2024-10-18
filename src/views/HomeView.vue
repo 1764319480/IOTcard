@@ -2,9 +2,16 @@
 import { ref } from 'vue';
 // 显示遮罩层
 const showBackground = ref(false);
+// 显示选项
+const options = ref(false);
+const showOptions = (lock:boolean, e:Event) => {
+    e.stopPropagation();
+    options.value = lock;
+}
 // 显示设置
 const showSetting = ref(false);
-const select_setting = () => {
+const select_setting = (e:Event) => {
+    e.stopPropagation();
     showBackground.value = true;
     showSetting.value = true;
 }
@@ -91,11 +98,11 @@ const checkPwd = (option: string) => {
 }
 </script>
 <template>
-    <div class="content">
+    <div class="content" @click="showOptions(false,$event)">
         <div class="header">
             <div class="title"></div>
-            <div class="account"></div>
-            <div class="table">
+            <div class="account" @click="showOptions(true,$event)"></div>
+            <div class="table" v-show="options">
                 <div>
                     <div></div>
                     <p>用户名</p>
@@ -114,7 +121,7 @@ const checkPwd = (option: string) => {
             <div class="sider"></div>
             <div class="main"></div>
         </div>
-        <div class="background" v-show="showBackground">
+        <div class="background" v-show="showBackground" @click="e => e.stopPropagation()">
             <div class="setting" v-show="showSetting">
                 <div class="setting-left">
                     <div>设置</div>
@@ -479,6 +486,10 @@ const checkPwd = (option: string) => {
             >div {
                 display: flex;
                 align-items: center;
+            }
+            >div:hover {
+                background: rgba(89, 149, 253, 0.071);
+                cursor: pointer;
             }
 
             p {

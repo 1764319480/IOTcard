@@ -607,6 +607,7 @@ const checkPwd = (option: string) => {
             width: 193px;
             height: 130px;
             border-radius: 4px;
+            z-index: 99;
             opacity: 1;
             background: #FFFFFF;
             box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.3);

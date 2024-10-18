@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Plus, Refresh, Search, Delete} from '@element-plus/icons-vue'
+import { Plus, Refresh, Search, Delete, Warning } from '@element-plus/icons-vue'
 // 显示遮罩层
 const showBackground = ref(false);
 // 显示选项
@@ -186,21 +186,45 @@ const checkPwd = (option: string) => {
                         <div>操作</div>
                     </div>
                     <!-- <template> -->
+                    <div>
+                        <div><el-checkbox></el-checkbox></div>
+                        <div>1</div>
+                        <div>张三</div>
+                        <div>zhangsan</div>
+                        <div>管理员</div>
+                        <div><el-switch inline-prompt active-text="启用" inactive-text="禁用" /></div>
+                        <div>2024-10-19 2:17</div>
                         <div>
-                            <div><el-checkbox></el-checkbox></div>
-                            <div>1</div>
-                            <div>张三</div>
-                            <div>zhangsan</div>
-                            <div>管理员</div>
-                            <div><el-switch inline-prompt active-text="启用" inactive-text="禁用"/></div>
-                            <div>2024-10-19 2:17</div>
-                            <div>
-                                <p>编辑</p>
-                                &nbsp;
-                                <p>删除</p>
-                            </div>
+                            <p>编辑</p>
+                            &nbsp;
+                            <el-popover placement="top" :width="200" trigger="click">
+                                <div style="display: flex;flex-direction: column; justify-content: space-around; width: 168px; height: 96px;">
+                                    <div style="display: flex;align-items: center;justify-content: space-around">
+                                        <el-icon color="red"><Warning/></el-icon>
+                                        <p>确定删除该记录吗？</p>
+                                    </div>
+                                    
+                                    <div style="display: flex;justify-content: flex-end;">
+                                        <el-button>取消</el-button>
+                                        <el-button type="danger">确定</el-button>
+                                    </div>
+                                </div>
+                                <template #reference>
+                                    <p>删除</p>
+                                </template>
+                            </el-popover> 
                         </div>
+                    </div>
                     <!-- </template> -->
+                </div>
+                <div class="foot">
+                    <div>
+                        <p>1</p>
+                        <p>2</p>
+                        <p>3</p>
+                        <p>4</p>
+                        <p>5</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -713,7 +737,6 @@ const checkPwd = (option: string) => {
 
         .main {
             flex: 1;
-
             .process {
                 height: 50px;
                 box-sizing: border-box;
@@ -796,7 +819,8 @@ const checkPwd = (option: string) => {
                     }
                 }
 
-                >div:nth-child(2), >div:nth-child(3){
+                >div:nth-child(2),
+                >div:nth-child(3) {
                     width: 140px;
 
                     >div {
@@ -819,6 +843,7 @@ const checkPwd = (option: string) => {
                             letter-spacing: 0px;
                             color: #909AAA;
                         }
+
                         >div {
                             width: 9px;
                             height: 6px;
@@ -828,11 +853,14 @@ const checkPwd = (option: string) => {
                         }
                     }
                 }
+
                 >div:nth-child(3) {
                     width: 110px;
                 }
+
                 >div:nth-child(4) {
                     width: 264px;
+
                     >div {
                         width: 190px;
                         height: 32px;
@@ -841,20 +869,25 @@ const checkPwd = (option: string) => {
                         border: 1px solid #CBD5E0;
                     }
                 }
-                >div:nth-child(5), >div:nth-child(6) {
+
+                >div:nth-child(5),
+                >div:nth-child(6) {
                     margin-left: 5px;
                     display: flex;
                     align-items: center;
                     justify-content: flex-end;
                 }
+
                 >div:nth-child(6) {
                     margin-left: 10px;
                 }
             }
+
             .lists {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
+                height: 68vh;
                 >div {
                     width: 99%;
                     height: 39px;
@@ -862,35 +895,45 @@ const checkPwd = (option: string) => {
                     align-items: center;
                     justify-content: space-between;
                     border-bottom: 1px solid rgb(207, 202, 202);
+
                     >div {
                         width: 120px;
                     }
+
                     >div:nth-child(1) {
                         margin-left: 10px;
                         width: 20px;
                     }
+
                     >div:nth-child(2) {
                         width: 50px;
                     }
+
                     >div:nth-child(7) {
                         width: 200px;
                     }
+
                     >div:nth-child(8) {
                         display: flex;
+
                         >p:nth-child(1) {
                             color: #5995FD
                         }
+
                         >p:nth-child(2) {
                             color: #F33A15
                         }
+
                         >p:hover {
                             cursor: default;
                         }
                     }
                 }
+
                 .listName {
                     background: #EEEEEE;
                     z-index: 0;
+
                     >p {
                         font-family: 思源黑体;
                         font-size: 16px;
@@ -899,6 +942,31 @@ const checkPwd = (option: string) => {
                         letter-spacing: 0px;
                         color: #1A1A1A;
                         z-index: 1;
+                    }
+                }
+            }
+            .foot {
+                width: 99%;
+                height: 40px;
+                margin: 0 0.5%;
+                // background-color: #c21b1b;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                >div {
+                    width: 100px;
+                    display: flex;
+                    justify-content: space-around;
+                    >p {
+                        font-family: Inter;
+                        font-size: 12px;
+                        font-weight: 500;
+                        line-height: 12px;
+                        letter-spacing: 0px;
+                        color: #9C9C9C;
+                    }
+                    >p:hover {
+                        cursor: default;
                     }
                 }
             }

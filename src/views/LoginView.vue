@@ -5,6 +5,8 @@ import md5 from 'crypto-js/md5';
 // @ts-ignore
 import { userStore } from '@/stores/user';
 import { ElMessage } from 'element-plus';
+// @ts-ignore
+import router from '@/router';
 const userData = userStore();
 // 基本变量
 const account = ref('');
@@ -80,6 +82,16 @@ const checkContent = (option: string) => {
   }
 }
 //登录
+let timer:any = null;// 登录按钮节流
+const slowLogin = () => {
+    if(timer) {
+      return;
+    }
+    timer = setTimeout(() => {
+      login();
+      timer = null;
+    }, 1000)
+}
 const login = async () => {
   const check1 = checkContent('账号');
   const check2 = checkContent('密码');
@@ -94,7 +106,9 @@ const login = async () => {
       message: '登录成功',
       type: 'success'
     })
-    //跳转逻辑
+    setTimeout(() => {
+      router.push('/home');
+    },300)
   }else {
     ElMessage({
       message: result,
@@ -109,7 +123,7 @@ onMounted(() => {
         inputs.forEach(node => {
             node.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
-                  login();
+                  slowLogin();
                 }
             })
         })
@@ -158,7 +172,7 @@ onMounted(() => {
           </div>
           <p class="alert_p">{{ alert_captcha }}</p>
         </div>
-        <div @click="login">登录</div>
+        <div @click="slowLogin">登录</div>
       </div>
     </div>
   </div>

@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { Plus, Refresh, Search, Delete} from '@element-plus/icons-vue'
 // 显示遮罩层
 const showBackground = ref(false);
 // 显示选项
 const options = ref(false);
-const showOptions = (lock:boolean, e:Event) => {
+const showOptions = (lock: boolean, e: Event) => {
     e.stopPropagation();
     options.value = lock;
 }
 // 显示设置
 const showSetting = ref(false);
-const select_setting = (e:Event) => {
+const select_setting = (e: Event) => {
     e.stopPropagation();
     showBackground.value = true;
     showSetting.value = true;
@@ -98,10 +99,10 @@ const checkPwd = (option: string) => {
 }
 </script>
 <template>
-    <div class="content" @click="showOptions(false,$event)">
+    <div class="content" @click="showOptions(false, $event)">
         <div class="header">
             <div class="title"></div>
-            <div class="account" @click="showOptions(true,$event)"></div>
+            <div class="account" @click="showOptions(true, $event)"></div>
             <div class="table" v-show="options">
                 <div>
                     <div></div>
@@ -118,8 +119,90 @@ const checkPwd = (option: string) => {
             </div>
         </div>
         <div class="body">
-            <div class="sider"></div>
-            <div class="main"></div>
+            <div class="sider">
+                <div class="manage_system">
+                    <div>
+                        <div></div>
+                        <div>系统管理</div>
+                    </div>
+                    <div></div>
+                </div>
+                <div class="manage_user select_manage">
+                    <p>用户管理</p>
+                </div>
+                <div class="manage_role">
+                    <p>角色管理</p>
+                </div>
+            </div>
+            <div class="main">
+                <div class="process">
+                    <div>系统管理</div>
+                    <div>&nbsp;>&nbsp;</div>
+                    <div>用户管理</div>
+                </div>
+                <div class="filter">
+                    <div>
+                        <p>用户名/账号</p>
+                        <div>
+                            <input type="text" placeholder="搜索用户名/账号">
+                        </div>
+                    </div>
+                    <div>
+                        <p>用户角色</p>
+                        <div>
+                            <p>全部</p>
+                            <div></div>
+                        </div>
+                    </div>
+                    <div>
+                        <p>状态</p>
+                        <div>
+                            <p>全部</p>
+                            <div></div>
+                        </div>
+                    </div>
+                    <div>
+                        <p>创建时间</p>
+                        <div></div>
+                    </div>
+                    <div>
+                        <el-button type="primary" :icon="Search">搜索</el-button>
+                        <el-button :icon="Refresh">重置</el-button>
+                    </div>
+                    <div>
+                        <el-button type="primary" :icon="Plus">添加</el-button>
+                        <el-button type="danger" :icon="Delete">删除</el-button>
+                    </div>
+                </div>
+                <div class="lists">
+                    <div class="listName">
+                        <div><el-checkbox></el-checkbox></div>
+                        <div>序号</div>
+                        <div>用户名</div>
+                        <div>账号</div>
+                        <div>用户角色</div>
+                        <div>状态</div>
+                        <div>创建时间</div>
+                        <div>操作</div>
+                    </div>
+                    <!-- <template> -->
+                        <div>
+                            <div><el-checkbox></el-checkbox></div>
+                            <div>1</div>
+                            <div>张三</div>
+                            <div>zhangsan</div>
+                            <div>管理员</div>
+                            <div><el-switch inline-prompt active-text="启用" inactive-text="禁用"/></div>
+                            <div>2024-10-19 2:17</div>
+                            <div>
+                                <p>编辑</p>
+                                &nbsp;
+                                <p>删除</p>
+                            </div>
+                        </div>
+                    <!-- </template> -->
+                </div>
+            </div>
         </div>
         <div class="background" v-show="showBackground" @click="e => e.stopPropagation()">
             <div class="setting" v-show="showSetting">
@@ -487,6 +570,7 @@ const checkPwd = (option: string) => {
                 display: flex;
                 align-items: center;
             }
+
             >div:hover {
                 background: rgba(89, 149, 253, 0.071);
                 cursor: pointer;
@@ -554,14 +638,270 @@ const checkPwd = (option: string) => {
         display: flex;
 
         .sider {
-            width: 220px;
-            ;
+            width: 200px;
             opacity: 1;
             border-right: 1px solid #CBD5E0;
+
+            .select_manage {
+                color: #5995FD;
+                font-weight: bold;
+                background: rgba(89, 149, 253, 0.051);
+            }
+
+            >div {
+                opacity: 1;
+                font-family: Source Han Serif CN;
+                font-size: 14px;
+                font-weight: normal;
+                line-height: normal;
+                letter-spacing: 0em;
+                font-variation-settings: "opsz" auto;
+                font-feature-settings: "kern" on;
+                color: #4E5D78;
+            }
+
+            .manage_system {
+                width: 200px;
+                height: 50px;
+                opacity: 1;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+
+                >div:nth-child(1) {
+                    width: 50%;
+                    display: flex;
+
+                    >div:nth-child(1) {
+                        width: 20px;
+                        height: 20px;
+                        margin: 0 10px;
+                        background-image: url('@/assets/images/setting-icon.svg');
+                        background-size: contain;
+                    }
+
+                    >div:nth-child(2) {
+                        width: 56px;
+                        height: 20px;
+                    }
+
+                }
+
+                >div:nth-child(2) {
+                    width: 14px;
+                    height: 8px;
+                    margin-right: 11px;
+                    background-image: url('@/assets/images/arrow-bottom.svg');
+                    background-size: contain;
+                    background-repeat: no-repeat;
+                }
+            }
+
+            .manage_user,
+            .manage_role {
+                width: 200px;
+                height: 50px;
+                opacity: 1;
+                display: flex;
+                align-items: center;
+
+                p {
+                    margin-left: 40px;
+                }
+            }
         }
 
         .main {
             flex: 1;
+
+            .process {
+                height: 50px;
+                box-sizing: border-box;
+                opacity: 1;
+                border-style: solid;
+                border-width: 0px 0px 1px 0px;
+                border-color: #CBD5E0;
+                display: flex;
+                align-items: center;
+
+                >:nth-child(1) {
+                    margin-left: 16px;
+                    font-family: Source Han Serif CN;
+                    font-weight: 700;
+                    font-size: 14px;
+                    font-variation-settings: "opsz" auto;
+                    color: #3D3D3D
+                }
+
+                >div:nth-child(3) {
+                    font-family: Source Han Serif CN;
+                    font-weight: 400;
+                    font-size: 14px;
+                    font-variation-settings: "opsz" auto;
+                    color: #909AAA
+                }
+            }
+
+            .filter {
+                height: 60px;
+                display: flex;
+                align-items: center;
+
+                >div {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    height: 50px;
+
+                    >p {
+                        font-family: 思源黑体;
+                        font-size: 14px;
+                        font-weight: normal;
+                        line-height: normal;
+                        letter-spacing: 0px;
+                        color: #3D3D3D;
+                        margin-left: 8px;
+                    }
+                }
+
+                >div:nth-child(1) {
+                    width: 200px;
+
+                    >div {
+                        width: 100px;
+                        height: 32px;
+                        border-radius: 4px;
+                        opacity: 1;
+                        background: #FFFFFF;
+                        box-sizing: border-box;
+                        border: 1px solid #CBD5E0;
+
+                        >input {
+                            width: 90%;
+                            height: 100%;
+                            border: none;
+                            outline: none;
+                            box-shadow: none;
+                            margin: 0 5%;
+                        }
+
+                        input::placeholder {
+                            font-family: 思源黑体;
+                            font-size: 12px;
+                            font-weight: normal;
+                            line-height: normal;
+                            letter-spacing: 0px;
+                            color: #909AAA;
+                        }
+                    }
+                }
+
+                >div:nth-child(2), >div:nth-child(3){
+                    width: 140px;
+
+                    >div {
+                        width: 70px;
+                        height: 32px;
+                        border-radius: 4px;
+                        opacity: 1;
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-around;
+                        background: #FFFFFF;
+                        box-sizing: border-box;
+                        border: 1px solid #CBD5E0;
+
+                        >p {
+                            font-family: 思源黑体;
+                            font-size: 12px;
+                            font-weight: normal;
+                            line-height: normal;
+                            letter-spacing: 0px;
+                            color: #909AAA;
+                        }
+                        >div {
+                            width: 9px;
+                            height: 6px;
+                            background-image: url('@/assets/images/arrow-bottom.svg');
+                            background-size: contain;
+                            background-repeat: no-repeat;
+                        }
+                    }
+                }
+                >div:nth-child(3) {
+                    width: 110px;
+                }
+                >div:nth-child(4) {
+                    width: 264px;
+                    >div {
+                        width: 190px;
+                        height: 32px;
+                        border-radius: 4px;
+                        box-sizing: border-box;
+                        border: 1px solid #CBD5E0;
+                    }
+                }
+                >div:nth-child(5), >div:nth-child(6) {
+                    margin-left: 5px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-end;
+                }
+                >div:nth-child(6) {
+                    margin-left: 10px;
+                }
+            }
+            .lists {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                >div {
+                    width: 99%;
+                    height: 39px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    border-bottom: 1px solid rgb(207, 202, 202);
+                    >div {
+                        width: 120px;
+                    }
+                    >div:nth-child(1) {
+                        margin-left: 10px;
+                        width: 20px;
+                    }
+                    >div:nth-child(2) {
+                        width: 50px;
+                    }
+                    >div:nth-child(7) {
+                        width: 200px;
+                    }
+                    >div:nth-child(8) {
+                        display: flex;
+                        >p:nth-child(1) {
+                            color: #5995FD
+                        }
+                        >p:nth-child(2) {
+                            color: #F33A15
+                        }
+                        >p:hover {
+                            cursor: default;
+                        }
+                    }
+                }
+                .listName {
+                    background: #EEEEEE;
+                    z-index: 0;
+                    >p {
+                        font-family: 思源黑体;
+                        font-size: 16px;
+                        font-weight: normal;
+                        line-height: normal;
+                        letter-spacing: 0px;
+                        color: #1A1A1A;
+                        z-index: 1;
+                    }
+                }
+            }
         }
     }
 }

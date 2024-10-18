@@ -1,24 +1,31 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onBeforeMount } from 'vue';
 // @ts-ignore
-import VerifyCodeImg from '@/components/VerifyCodeImg.vue';
-// @ts-ignore
-import sha256 from 'crypto-js/sha256';
+import md5 from 'crypto-js/md5';
 // @ts-ignore
 import { userStore } from '@/stores/user';
+import { ElMessage } from 'element-plus';
 const userData = userStore();
 // 基本变量
 const account = ref('');
 const alert_account = ref('');
 const pwd = ref('');
 const alert_pwd = ref('');
+const captchaUrl = ref();//验证码图片
 const captcha = ref('');//验证码
-const captcha_true = ref('');//校验的验证码
 const alert_captcha = ref('');
 // 获取验证码
-const getVerifyCodeStr = (verifyCodeStr:string) => {
-  captcha_true.value = verifyCodeStr;
+const getCaptchaUrl = async() => {
+  const data = await userData.getCaptcha();
+  if(data) {
+    captchaUrl.value = data;
+  } else {
+    alert_captcha.value = '获取验证码失败'
+  }
 }
+onBeforeMount(() => {
+  getCaptchaUrl();
+})
 // 密码显示与隐藏
 const showpwd = ref(false);
 const eye_style = ref('close');
@@ -80,21 +87,19 @@ const login = async () => {
   if (!check1 || !check2 || !check3) {
     return;
   }
-  if (captcha.value != captcha_true.value) {
-    alert_captcha.value = '验证码错误';
-    return;
-  }
-  const password = sha256(pwd.value).toString();
-  const result = await userData.login(account.value, password);
+  const password = md5(pwd.value).toString();
+  const result = await userData.login(account.value, password, captcha.value);
   if(result === 1) {
-    alert('登录成功！')
+    ElMessage({
+      message: '登录成功',
+      type: 'success'
+    })
     //跳转逻辑
   }else {
-    if ((result as string).startsWith('账号')) {
-      alert_pwd.value = result;
-    } else {
-      alert_account.value = result;
-    } 
+    ElMessage({
+      message: result,
+      type: 'error'
+    });
   }
 }
 //批量添加enter点击事件
@@ -147,8 +152,8 @@ onMounted(() => {
                 <input type="text" placeholder="验证码" v-model="captcha" @blur="checkContent('验证码')">
               </div>
             </div>
-            <div>
-              <VerifyCodeImg :canvasWidth="67" :canvasHeight="25" ref="verifyCodeImgRef" @getVerifyCodeStr="getVerifyCodeStr" />
+            <div @click="getCaptchaUrl">
+              <img :src="captchaUrl" alt="">
             </div>
           </div>
           <p class="alert_p">{{ alert_captcha }}</p>
@@ -387,8 +392,10 @@ onMounted(() => {
           }
 
           >div:nth-child(2) {
-            width: 67px;
-            height: 25px;
+            img {
+              width: 67px;
+              height: 25px;
+            }
             // margin-left: 13px;
             opacity: 1;
             background-repeat: no-repeat;

@@ -149,17 +149,35 @@ const checkPwd = (option: string) => {
                     </div>
                     <div>
                         <p>用户角色</p>
-                        <div>
-                            <p>全部</p>
-                            <div></div>
-                        </div>
+                        <el-dropdown>
+                            <div class="checkgroup">
+                                <p>全部</p>
+                                <div></div>
+                            </div>
+                            <template #dropdown>
+                                <el-dropdown-menu>
+                                    <el-dropdown-item>全部</el-dropdown-item>
+                                    <el-dropdown-item>管理员</el-dropdown-item>
+                                    <el-dropdown-item>普通用户</el-dropdown-item>
+                                </el-dropdown-menu>
+                            </template>
+                        </el-dropdown>
                     </div>
                     <div>
                         <p>状态</p>
-                        <div>
-                            <p>全部</p>
-                            <div></div>
-                        </div>
+                        <el-dropdown>
+                            <div class="checkgroup">
+                                <p>全部</p>
+                                <div></div>
+                            </div>
+                            <template #dropdown>
+                                <el-dropdown-menu>
+                                    <el-dropdown-item>全部</el-dropdown-item>
+                                    <el-dropdown-item>启用</el-dropdown-item>
+                                    <el-dropdown-item>禁用</el-dropdown-item>
+                                </el-dropdown-menu>
+                            </template>
+                        </el-dropdown>
                     </div>
                     <div>
                         <p>创建时间</p>
@@ -198,12 +216,15 @@ const checkPwd = (option: string) => {
                             <p>编辑</p>
                             &nbsp;
                             <el-popover placement="top" :width="200" trigger="click">
-                                <div style="display: flex;flex-direction: column; justify-content: space-around; width: 168px; height: 96px;">
+                                <div
+                                    style="display: flex;flex-direction: column; justify-content: space-around; width: 168px; height: 96px;">
                                     <div style="display: flex;align-items: center;justify-content: space-around">
-                                        <el-icon color="red"><Warning/></el-icon>
+                                        <el-icon color="red">
+                                            <Warning />
+                                        </el-icon>
                                         <p>确定删除该记录吗？</p>
                                     </div>
-                                    
+
                                     <div style="display: flex;justify-content: flex-end;">
                                         <el-button>取消</el-button>
                                         <el-button type="danger">确定</el-button>
@@ -212,7 +233,7 @@ const checkPwd = (option: string) => {
                                 <template #reference>
                                     <p>删除</p>
                                 </template>
-                            </el-popover> 
+                            </el-popover>
                         </div>
                     </div>
                     <!-- </template> -->
@@ -822,8 +843,7 @@ const checkPwd = (option: string) => {
                 >div:nth-child(2),
                 >div:nth-child(3) {
                     width: 140px;
-
-                    >div {
+                    .checkgroup {
                         width: 70px;
                         height: 32px;
                         border-radius: 4px;
@@ -888,6 +908,7 @@ const checkPwd = (option: string) => {
                 flex-direction: column;
                 align-items: center;
                 height: 68vh;
+
                 >div {
                     width: 99%;
                     height: 39px;
@@ -945,6 +966,7 @@ const checkPwd = (option: string) => {
                     }
                 }
             }
+
             .foot {
                 width: 99%;
                 height: 40px;
@@ -953,10 +975,12 @@ const checkPwd = (option: string) => {
                 display: flex;
                 align-items: center;
                 justify-content: flex-end;
+
                 >div {
                     width: 100px;
                     display: flex;
                     justify-content: space-around;
+
                     >p {
                         font-family: Inter;
                         font-size: 12px;
@@ -965,6 +989,7 @@ const checkPwd = (option: string) => {
                         letter-spacing: 0px;
                         color: #9C9C9C;
                     }
+
                     >p:hover {
                         cursor: default;
                     }

@@ -210,6 +210,13 @@ const filterStatus = (command: number) => {
     selectStatus.value = statuses[command];
     status.value = command;
 }
+// 重置输入内容
+const reset = () => {
+    keyword.value = '';
+    filterRole(1003);
+    filterStatus(2);
+    timeList.value = [];
+}
 // 搜索结果
 const userList = ref();
 // 搜索用户
@@ -223,7 +230,7 @@ const slowSearch = () => {
         timer1 = null;
     }, 1000)
 }
-const search = async() => {
+const search = async () => {
     const data = await userData.getUserList({
         keyword: keyword.value,
         roleId: roleId.value,
@@ -236,9 +243,9 @@ const search = async() => {
     if (data === 1) {
         userList.value = userData.userList;
         userList.value.forEach((item: any) => {
-            if(item.status === 1) {
+            if (item.status === 1) {
                 item.statusParse = true;
-            }else {
+            } else {
                 item.statusParse = false;
             }
         })
@@ -252,6 +259,11 @@ const search = async() => {
             type: 'error'
         })
     }
+
+}
+// 批量删除
+const dialogVisible = ref(false);
+const handleClose = () => {
 
 }
 //批量添加enter点击事件
@@ -270,6 +282,7 @@ onMounted(() => {
     keyEnter();
 })
 </script>
+
 <template>
     <div class="content" @click="showOptions(false, $event)">
         <div class="header">
@@ -357,18 +370,35 @@ onMounted(() => {
                             <p>创建时间</p>
                             <div>
                                 <el-date-picker v-model="timeList" type="datetimerange" start-placeholder="开始时间"
-                                    end-placeholder="结束时间" value-format="YYYY/MM/DD HH:mm:ss"/>
+                                    end-placeholder="结束时间" value-format="YYYY/MM/DD HH:mm:ss" />
                             </div>
                         </div>
                         <div>
                             <el-button type="primary" :icon="Search" @click="slowSearch">搜索</el-button>
-                            <el-button :icon="Refresh" type="primary" plain="true">重置</el-button>
+                            <el-button :icon="Refresh" type="primary" plain="true" @click="reset">重置</el-button>
                         </div>
                     </div>
                     <div class="filter_right">
                         <div>
                             <el-button type="primary" :icon="Plus">添加</el-button>
-                            <el-button type="danger" :icon="Delete" plain="true">删除</el-button>
+                            <el-button type="danger" :icon="Delete" plain="true" @click="dialogVisible = true">删除</el-button>
+                            <el-dialog v-model="dialogVisible" width="200" :before-close="handleClose" :show-close="false">
+                                <div class="delete_class">
+                                    <el-icon color="red">
+                                        <Warning />
+                                    </el-icon>
+                                    <div class="delete_title">确认删除?</div>
+                                    <div class="delete_data">将删除5条记录，请谨慎操作！</div>
+                                </div>
+                                <template #footer>
+                                    <div class="dialog-footer">
+                                        <el-button @click="dialogVisible = false">取消</el-button>
+                                        <el-button type="danger" @click="dialogVisible = false">
+                                            确认
+                                        </el-button>
+                                    </div>
+                                </template>
+                            </el-dialog>
                         </div>
                     </div>
                 </div>
@@ -384,39 +414,40 @@ onMounted(() => {
                         <div>操作</div>
                     </div>
                     <template v-for="(item) in userList" :key="item.id">
-                    <div>
-                        <div><el-checkbox></el-checkbox></div>
-                        <div>{{ item.id }}</div>
-                        <div>{{ item.userName }}</div>
-                        <div>{{ item.account }}</div>
-                        <!-- eslint和typescript规则冲突 -->
-                        <div>{{ item.roles.map((e) => e.roleName).join(',') }}</div>
-                        <div><el-switch inline-prompt active-text="启用" inactive-text="禁用" v-model="item.statusParse"/></div>
-                        <div>{{ item.createTime.toString().slice(0,19).replace('T', ' ') }}</div>
                         <div>
-                            <p>编辑</p>
-                            &nbsp;
-                            <el-popover placement="top" :width="200" trigger="click">
-                                <div
-                                    style="display: flex;flex-direction: column; justify-content: space-around; width: 168px; height: 96px;">
-                                    <div style="display: flex;align-items: center;justify-content: space-around">
-                                        <el-icon color="red">
-                                            <Warning />
-                                        </el-icon>
-                                        <p>确定删除该记录吗？</p>
-                                    </div>
+                            <div><el-checkbox></el-checkbox></div>
+                            <div>{{ item.id }}</div>
+                            <div>{{ item.userName }}</div>
+                            <div>{{ item.account }}</div>
+                            <!-- eslint和typescript规则冲突 -->
+                            <div>{{ item.roles.map((e) => e.roleName).join(',') }}</div>
+                            <div><el-switch inline-prompt active-text="启用" inactive-text="禁用"
+                                    v-model="item.statusParse" /></div>
+                            <div>{{ item.createTime.toString().slice(0, 19).replace('T', ' ') }}</div>
+                            <div>
+                                <p>编辑</p>
+                                &nbsp;
+                                <el-popover placement="top" :width="200" trigger="click">
+                                    <div
+                                        style="display: flex;flex-direction: column; justify-content: space-around; width: 168px; height: 96px;">
+                                        <div style="display: flex;align-items: center;justify-content: space-around">
+                                            <el-icon color="red">
+                                                <Warning />
+                                            </el-icon>
+                                            <p>确定删除该记录吗？</p>
+                                        </div>
 
-                                    <div style="display: flex;justify-content: flex-end;">
-                                        <el-button>取消</el-button>
-                                        <el-button type="danger">确定</el-button>
+                                        <div style="display: flex;justify-content: flex-end;">
+                                            <el-button>取消</el-button>
+                                            <el-button type="danger">确定</el-button>
+                                        </div>
                                     </div>
-                                </div>
-                                <template #reference>
-                                    <p>删除</p>
-                                </template>
-                            </el-popover>
+                                    <template #reference>
+                                        <p>删除</p>
+                                    </template>
+                                </el-popover>
+                            </div>
                         </div>
-                    </div>
                     </template>
                 </div>
                 <div class="foot">
@@ -1099,6 +1130,35 @@ onMounted(() => {
                     display: flex;
                     flex-direction: column;
                     align-items: center;
+                    .delete_class {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        .delete_title {
+                            margin-top: 10px;
+                            height: 23px;
+                            font-family: Source Han Sans;
+                            font-size: 16px;
+                            font-weight: normal;
+                            line-height: normal;
+                            letter-spacing: 0em;
+                            font-variation-settings: "opsz" auto;
+                            font-feature-settings: "kern" on;
+                            color: #3D3D3D;
+                        }
+                        .delete_data {
+                            margin-top: 10px;
+                            height: 17px;
+                            font-family: Source Han Sans;
+                            font-size: 12px;
+                            font-weight: normal;
+                            line-height: normal;
+                            letter-spacing: 0em;
+                            font-variation-settings: "opsz" auto;
+                            font-feature-settings: "kern" on;
+                            color: #909AAA;
+                        }
+                    }
                 }
             }
 

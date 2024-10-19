@@ -179,6 +179,30 @@ const submit = () => {
         changePassword();
     }
 }
+// 退出登录
+const exitLogin = () => {
+    ElMessage({
+        message: '您已退出登录',
+        type: 'warning'
+    })
+    setTimeout(() => {
+        userData.exitLogin();
+        router.push('/login');
+    },500)
+    
+}
+// 筛选角色
+const roles = ['全部', '系统管理员', '管理员', '普通用户'];
+const selectRole = ref(roles[0]);
+const filterRole = (command: number) => {
+    selectRole.value = roles[command];
+}
+// 筛选状态
+const statuses = ['禁用', '启用', '全部'];
+const selectStatus = ref(statuses[2]);
+const filterStatus = (command: number) => {
+    selectStatus.value = statuses[command];
+}
 //批量添加enter点击事件
 onMounted(() => {
     function keyEnter() {
@@ -194,18 +218,6 @@ onMounted(() => {
     }
     keyEnter();
 })
-// 退出登录
-const exitLogin = () => {
-    ElMessage({
-        message: '您已退出登录',
-        type: 'warning'
-    })
-    setTimeout(() => {
-        userData.exitLogin();
-        router.push('/login');
-    },500)
-    
-}
 </script>
 <template>
     <div class="content" @click="showOptions(false, $event)">
@@ -258,32 +270,33 @@ const exitLogin = () => {
                     </div>
                     <div>
                         <p>用户角色</p>
-                        <el-dropdown>
+                        <el-dropdown @command="filterRole">
                             <div class="checkgroup">
-                                <p>全部</p>
+                                <p>{{ selectRole }}</p>
                                 <div></div>
                             </div>
                             <template #dropdown>
                                 <el-dropdown-menu>
-                                    <el-dropdown-item>全部</el-dropdown-item>
-                                    <el-dropdown-item>管理员</el-dropdown-item>
-                                    <el-dropdown-item>普通用户</el-dropdown-item>
+                                    <el-dropdown-item command="0">全部</el-dropdown-item>
+                                    <el-dropdown-item command="1">系统管理员</el-dropdown-item>
+                                    <el-dropdown-item command="2">管理员</el-dropdown-item>
+                                    <el-dropdown-item command="3">普通用户</el-dropdown-item>
                                 </el-dropdown-menu>
                             </template>
                         </el-dropdown>
                     </div>
                     <div>
                         <p>状态</p>
-                        <el-dropdown>
+                        <el-dropdown @command="filterStatus">
                             <div class="checkgroup">
-                                <p>全部</p>
+                                <p>{{ selectStatus }}</p>
                                 <div></div>
                             </div>
                             <template #dropdown>
                                 <el-dropdown-menu>
-                                    <el-dropdown-item>全部</el-dropdown-item>
-                                    <el-dropdown-item>启用</el-dropdown-item>
-                                    <el-dropdown-item>禁用</el-dropdown-item>
+                                    <el-dropdown-item command="2">全部</el-dropdown-item>
+                                    <el-dropdown-item command="1">启用</el-dropdown-item>
+                                    <el-dropdown-item command="0">禁用</el-dropdown-item>
                                 </el-dropdown-menu>
                             </template>
                         </el-dropdown>
@@ -294,11 +307,11 @@ const exitLogin = () => {
                     </div>
                     <div>
                         <el-button type="primary" :icon="Search">搜索</el-button>
-                        <el-button :icon="Refresh">重置</el-button>
+                        <el-button :icon="Refresh" type="primary" plain="true">重置</el-button>
                     </div>
                     <div>
                         <el-button type="primary" :icon="Plus">添加</el-button>
-                        <el-button type="danger" :icon="Delete">删除</el-button>
+                        <el-button type="danger" :icon="Delete" plain="true">删除</el-button>
                     </div>
                 </div>
                 <div class="lists">
@@ -973,6 +986,9 @@ const exitLogin = () => {
                             line-height: normal;
                             letter-spacing: 0px;
                             color: #909AAA;
+                            height: 15px;
+                            width: 50px;
+                            overflow: hidden;
                         }
 
                         >div {

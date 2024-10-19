@@ -264,8 +264,13 @@ const search = async () => {
 // 批量删除
 const dialogVisible = ref(false);
 const handleClose = () => {
-
 }
+// 添加用户
+const new_account = ref();
+const new_userName = ref();
+const new_role = ref();
+const fix_pwd = '12345678';
+const centerDialogVisible = ref(false);
 //批量添加enter点击事件
 onMounted(() => {
     function keyEnter() {
@@ -380,9 +385,44 @@ onMounted(() => {
                     </div>
                     <div class="filter_right">
                         <div>
-                            <el-button type="primary" :icon="Plus">添加</el-button>
-                            <el-button type="danger" :icon="Delete" plain="true" @click="dialogVisible = true">删除</el-button>
-                            <el-dialog v-model="dialogVisible" width="200" :before-close="handleClose" :show-close="false">
+                            <el-button type="primary" :icon="Plus" @click="centerDialogVisible = true">添加</el-button>
+                            <el-dialog v-model="centerDialogVisible" title="添加用户" width="400" align-center>
+                                <div class="account_form">
+                                    <div>
+                                        <p>*账号:</p>
+                                        <el-input v-model="new_account" style="width: 200px" placeholder="请输入账号"
+                                            clearable />
+                                    </div>
+                                    <div>
+                                        <p>*用户名:</p>
+                                        <el-input v-model="new_userName" style="width: 200px" placeholder="请输入用户名"
+                                            clearable />
+                                    </div>
+                                    <div>
+                                        <p>*角色:</p>
+                                        <el-input v-model="new_role" style="width: 200px" placeholder="请选择角色"
+                                            clearable />
+                                    </div>
+                                    <div>
+                                        <p>*密码:</p>
+                                        <el-input v-model="fix_pwd" style="width: 200px" placeholder="Please input"
+                                            disabled />
+                                    </div>
+                                </div>
+                                <template #footer>
+                                    <div class="dialog-footer">
+                                        <el-button @click="centerDialogVisible = false">取消</el-button>
+                                        <el-button type="primary" @click="centerDialogVisible = false">
+                                            保存
+                                        </el-button>
+                                    </div>
+                                </template>
+                            </el-dialog>
+                            &nbsp;
+                            <el-button type="danger" :icon="Delete" plain="true"
+                                @click="dialogVisible = true">删除</el-button>
+                            <el-dialog v-model="dialogVisible" width="200" :before-close="handleClose"
+                                :show-close="false">
                                 <div class="delete_class">
                                     <el-icon color="red">
                                         <Warning />
@@ -1130,10 +1170,51 @@ onMounted(() => {
                     display: flex;
                     flex-direction: column;
                     align-items: center;
+
+                    .account_form {
+                        width: 350px;
+                        height: 200px;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: space-between;
+
+                        // background-color: #7e0d0d;
+                        >div {
+                            display: flex;
+                            align-items: center;
+                            width: 300px;
+                            height: 33px;
+
+                            >p {
+                                width: 80px;
+                                height: 20px;
+                                opacity: 1;
+                                font-family: Source Han Sans;
+                                font-size: 14px;
+                                font-weight: normal;
+                                line-height: normal;
+                                letter-spacing: 0em;
+                                font-variation-settings: "opsz" auto;
+                                font-feature-settings: "kern" on;
+                                color: #3D3D3D;
+                            }
+
+                            >div {
+                                width: 174px;
+                                height: 32px;
+                                border-radius: 4px;
+                                opacity: 1;
+                                box-sizing: border-box;
+                                border: 1px solid #CBD5E0;
+                            }
+                        }
+                    }
+
                     .delete_class {
                         display: flex;
                         flex-direction: column;
                         align-items: center;
+
                         .delete_title {
                             margin-top: 10px;
                             height: 23px;
@@ -1146,6 +1227,7 @@ onMounted(() => {
                             font-feature-settings: "kern" on;
                             color: #3D3D3D;
                         }
+
                         .delete_data {
                             margin-top: 10px;
                             height: 17px;

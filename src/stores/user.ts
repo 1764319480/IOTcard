@@ -77,6 +77,7 @@ export const userStore = defineStore('user', () => {
     const res = await axios.post('/api/api/user/list',condition);
     if(res.data.success) {
       userList.value = res.data.data.list;
+      console.log(userList.value)
       return 1;
     } else {
       return res.data.message;
@@ -90,7 +91,7 @@ export const userStore = defineStore('user', () => {
     sessionStorage.clear();
   }
 
-  return { user, sessionId, login, getCaptcha, getUserInfo, updateUserInfo, updatePassword, exitLogin, getUserList }
+  return { user, sessionId, userList, login, getCaptcha, getUserInfo, updateUserInfo, updatePassword, exitLogin, getUserList }
 },{
   persist: true
   }

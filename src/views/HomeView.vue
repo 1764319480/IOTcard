@@ -61,7 +61,7 @@ const showPwd = (option: number) => {
 const keyword = ref();
 const roleId = ref();
 const status = ref();
-const timeList = ref();
+const timeList = ref([]);
 // 密码格式验证
 const checkPwd = (option: string) => {
     const regex = /^[a-zA-Z0-9]+$/;
@@ -210,8 +210,48 @@ const filterStatus = (command: number) => {
     selectStatus.value = statuses[command];
     status.value = command;
 }
+// 搜索结果
+const userList = ref();
 // 搜索用户
-const search = () => {
+let timer1: any = null;// 提交按钮节流
+const slowSearch = () => {
+    if (timer1) {
+        return;
+    }
+    timer1 = setTimeout(() => {
+        search();
+        timer1 = null;
+    }, 1000)
+}
+const search = async() => {
+    const data = await userData.getUserList({
+        keyword: keyword.value,
+        roleId: roleId.value,
+        status: status.value,
+        startTime: timeList.value[0],
+        endTime: timeList.value[1],
+        pageNum: 1,
+        pageSize: 10
+    })
+    if (data === 1) {
+        userList.value = userData.userList;
+        userList.value.forEach((item: any) => {
+            if(item.status === 1) {
+                item.statusParse = true;
+            }else {
+                item.statusParse = false;
+            }
+        })
+        ElMessage({
+            message: '查询成功',
+            type: 'success'
+        })
+    } else {
+        ElMessage({
+            message: data,
+            type: 'error'
+        })
+    }
 
 }
 //批量添加enter点击事件
@@ -317,11 +357,11 @@ onMounted(() => {
                             <p>创建时间</p>
                             <div>
                                 <el-date-picker v-model="timeList" type="datetimerange" start-placeholder="开始时间"
-                                    end-placeholder="结束时间"/>
+                                    end-placeholder="结束时间" value-format="YYYY/MM/DD HH:mm:ss"/>
                             </div>
                         </div>
                         <div>
-                            <el-button type="primary" :icon="Search" @click="search">搜索</el-button>
+                            <el-button type="primary" :icon="Search" @click="slowSearch">搜索</el-button>
                             <el-button :icon="Refresh" type="primary" plain="true">重置</el-button>
                         </div>
                     </div>
@@ -343,15 +383,16 @@ onMounted(() => {
                         <div>创建时间</div>
                         <div>操作</div>
                     </div>
-                    <!-- <template> -->
+                    <template v-for="(item) in userList" :key="item.id">
                     <div>
                         <div><el-checkbox></el-checkbox></div>
-                        <div>1</div>
-                        <div>张三</div>
-                        <div>zhangsan</div>
-                        <div>管理员</div>
-                        <div><el-switch inline-prompt active-text="启用" inactive-text="禁用" /></div>
-                        <div>2024-10-19 2:17</div>
+                        <div>{{ item.id }}</div>
+                        <div>{{ item.userName }}</div>
+                        <div>{{ item.account }}</div>
+                        <!-- eslint和typescript规则冲突 -->
+                        <div>{{ item.roles.map((e) => e.roleName).join(',') }}</div>
+                        <div><el-switch inline-prompt active-text="启用" inactive-text="禁用" v-model="item.statusParse"/></div>
+                        <div>{{ item.createTime.toString().slice(0,19).replace('T', ' ') }}</div>
                         <div>
                             <p>编辑</p>
                             &nbsp;
@@ -376,7 +417,7 @@ onMounted(() => {
                             </el-popover>
                         </div>
                     </div>
-                    <!-- </template> -->
+                    </template>
                 </div>
                 <div class="foot">
                     <div>

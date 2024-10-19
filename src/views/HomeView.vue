@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { Plus, Refresh, Search, Delete, Warning } from '@element-plus/icons-vue';
+// @ts-ignore
+import md5 from 'crypto-js/md5';
 // @ts-ignore
 import { userStore } from '@/stores/user';
 import { ElMessage } from 'element-plus';
@@ -24,6 +26,12 @@ const select_setting = (e: Event) => {
 const closeBackground = () => {
     showSetting.value = false;
     showBackground.value = false;
+    old_pwd.value = '';
+    alert_oldpwd.value = '';
+    new_pwd.value = '';
+    alert_oldpwd.value = '';
+    comfirm_pwd.value = '';
+    alert_comfirmpwd.value = '';
 }
 // 设置里的选项卡
 const showSettingOption = ref(true);
@@ -80,7 +88,7 @@ const checkPwd = (option: string) => {
                 alert_newpwd.value = '请输入8~16位的密码';
                 return false;
             };
-            alert_oldpwd.value = '';
+            alert_newpwd.value = '';
             return true;
         }
         case '确认密码': {
@@ -104,13 +112,47 @@ const checkPwd = (option: string) => {
 }
 // 修改昵称/用户名
 const changeUserName = async () => {
-    const data = await userData.updateUserInfo(userName.value);
+    const data = await userData.updateUserInfo(userData.user.id, userName.value, userData.user.status);
     if(data === 1) {
         ElMessage({
             message: '修改成功',
             type: 'success'
         })
     } else {
+        ElMessage({
+            message: data,
+            type: 'error'
+        })
+    }
+}
+// 修改密码
+const changePassword = async () => {
+    const check1 = checkPwd('原密码');
+    const check2 = checkPwd('新密码');
+    const check3 = checkPwd('确认密码');
+    if(!check1 || !check2 || !check3) {
+        return;
+    }
+    if(new_pwd.value != comfirm_pwd.value){
+        alert_comfirmpwd.value = '两次密码输入不一致'
+        return;
+    }
+    const oldPassword = md5(old_pwd.value).toString();
+    const newPassword = md5(new_pwd.value).toString();
+    const data = await userData.updatePassword(oldPassword, newPassword);
+    if(data === 1) {
+        ElMessage({
+            message: '修改成功',
+            type: 'success'
+        });
+        old_pwd.value = '';
+        new_pwd.value = '';
+        comfirm_pwd.value = '';
+    } else {
+        if(data === '原密码错误') {
+            alert_oldpwd.value = '密码不正确';
+            return;
+        }
         ElMessage({
             message: data,
             type: 'error'
@@ -131,8 +173,25 @@ const slowSubmit = () => {
 const submit = () => {
     if(showSettingOption.value) {
         changeUserName();
+    } else {
+        changePassword();
     }
 }
+//批量添加enter点击事件
+onMounted(() => {
+    function keyEnter() {
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(node => {
+            node.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    node.blur();
+                  slowSubmit();
+                }
+            })
+        })
+    }
+    keyEnter();
+})
 </script>
 <template>
     <div class="content" @click="showOptions(false, $event)">

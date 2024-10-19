@@ -46,11 +46,11 @@ export const userStore = defineStore('user', () => {
     }
   }
   // 修改用户信息
-  const updateUserInfo = async (userName:string) => {
+  const updateUserInfo = async (userId: string, userName:string, status: number) => {
     const res = await axios.post('/api/api/user/update',{
-      userId: user.value.id,
+      userId,
       userName,
-      status: user.value.status
+      status
     })
     if(res.data.success) {
       user.value.userName = userName;
@@ -59,7 +59,20 @@ export const userStore = defineStore('user', () => {
       return res.data.message;
     }
   }
-  return { user, sessionId, login, getCaptcha, getUserInfo, updateUserInfo }
+  // 修改密码
+  const updatePassword = async (oldPassword:string, newPassword:string) => {
+    const res = await axios.post('/api/api/user/update_pwd', {
+      oldPassword,
+      newPassword
+    })
+    if(res.data.success) {
+      return 1;
+    } else {
+      return res.data.message;
+    }
+  }
+
+  return { user, sessionId, login, getCaptcha, getUserInfo, updateUserInfo, updatePassword }
 },{
   persist: true
   }

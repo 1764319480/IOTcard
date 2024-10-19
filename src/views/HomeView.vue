@@ -57,6 +57,11 @@ const eye_list = ref([false, false, false]);
 const showPwd = (option: number) => {
     eye_list.value[option] = !eye_list.value[option];
 }
+// 表单选项
+const keyword = ref();
+const roleId = ref();
+const status = ref();
+const timeList = ref();
 // 密码格式验证
 const checkPwd = (option: string) => {
     const regex = /^[a-zA-Z0-9]+$/;
@@ -115,7 +120,7 @@ const checkPwd = (option: string) => {
 // 修改昵称/用户名
 const changeUserName = async () => {
     const data = await userData.updateUserInfo(userData.user.id, userName.value, userData.user.status);
-    if(data === 1) {
+    if (data === 1) {
         ElMessage({
             message: '修改成功',
             type: 'success'
@@ -132,17 +137,17 @@ const changePassword = async () => {
     const check1 = checkPwd('原密码');
     const check2 = checkPwd('新密码');
     const check3 = checkPwd('确认密码');
-    if(!check1 || !check2 || !check3) {
+    if (!check1 || !check2 || !check3) {
         return;
     }
-    if(new_pwd.value != comfirm_pwd.value){
+    if (new_pwd.value != comfirm_pwd.value) {
         alert_comfirmpwd.value = '两次密码输入不一致'
         return;
     }
     const oldPassword = md5(old_pwd.value).toString();
     const newPassword = md5(new_pwd.value).toString();
     const data = await userData.updatePassword(oldPassword, newPassword);
-    if(data === 1) {
+    if (data === 1) {
         ElMessage({
             message: '修改成功',
             type: 'success'
@@ -151,7 +156,7 @@ const changePassword = async () => {
         new_pwd.value = '';
         comfirm_pwd.value = '';
     } else {
-        if(data === '原密码错误') {
+        if (data === '原密码错误') {
             alert_oldpwd.value = '密码不正确';
             return;
         }
@@ -162,18 +167,18 @@ const changePassword = async () => {
     }
 }
 // 提交数据
-let timer:any = null;// 提交按钮节流
+let timer: any = null;// 提交按钮节流
 const slowSubmit = () => {
-    if(timer) {
-      return;
+    if (timer) {
+        return;
     }
     timer = setTimeout(() => {
-      submit();
-      timer = null;
+        submit();
+        timer = null;
     }, 1000)
 }
 const submit = () => {
-    if(showSettingOption.value) {
+    if (showSettingOption.value) {
         changeUserName();
     } else {
         changePassword();
@@ -188,20 +193,26 @@ const exitLogin = () => {
     setTimeout(() => {
         userData.exitLogin();
         router.push('/login');
-    },500)
-    
+    }, 500)
+
 }
 // 筛选角色
-const roles = ['全部', '系统管理员', '管理员', '普通用户'];
-const selectRole = ref(roles[0]);
+const roles = ['系统管理员', '管理员', '普通用户', '全部'];
+const selectRole = ref(roles[3]);
 const filterRole = (command: number) => {
-    selectRole.value = roles[command];
+    selectRole.value = roles[command - 1000];
+    roleId.value = command;
 }
 // 筛选状态
 const statuses = ['禁用', '启用', '全部'];
 const selectStatus = ref(statuses[2]);
 const filterStatus = (command: number) => {
     selectStatus.value = statuses[command];
+    status.value = command;
+}
+// 搜索用户
+const search = () => {
+
 }
 //批量添加enter点击事件
 onMounted(() => {
@@ -211,7 +222,7 @@ onMounted(() => {
             node.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
                     node.blur();
-                  slowSubmit();
+                    slowSubmit();
                 }
             })
         })
@@ -262,56 +273,63 @@ onMounted(() => {
                     <div>用户管理</div>
                 </div>
                 <div class="filter">
-                    <div>
-                        <p>用户名/账号</p>
+                    <div class="filter_left">
                         <div>
-                            <input type="text" placeholder="搜索用户名/账号">
+                            <p>关键字</p>
+                            <div>
+                                <input type="text" placeholder="搜索用户名/账号" v-model="keyword">
+                            </div>
+                        </div>
+                        <div>
+                            <p>用户角色</p>
+                            <el-dropdown @command="filterRole">
+                                <div class="checkgroup">
+                                    <p>{{ selectRole }}</p>
+                                    <div></div>
+                                </div>
+                                <template #dropdown>
+                                    <el-dropdown-menu>
+                                        <el-dropdown-item command="1003">全部</el-dropdown-item>
+                                        <el-dropdown-item command="1000">系统管理员</el-dropdown-item>
+                                        <el-dropdown-item command="1001">管理员</el-dropdown-item>
+                                        <el-dropdown-item command="1002">普通用户</el-dropdown-item>
+                                    </el-dropdown-menu>
+                                </template>
+                            </el-dropdown>
+                        </div>
+                        <div>
+                            <p>状态</p>
+                            <el-dropdown @command="filterStatus">
+                                <div class="checkgroup">
+                                    <p>{{ selectStatus }}</p>
+                                    <div></div>
+                                </div>
+                                <template #dropdown>
+                                    <el-dropdown-menu>
+                                        <el-dropdown-item command="2">全部</el-dropdown-item>
+                                        <el-dropdown-item command="1">启用</el-dropdown-item>
+                                        <el-dropdown-item command="0">禁用</el-dropdown-item>
+                                    </el-dropdown-menu>
+                                </template>
+                            </el-dropdown>
+                        </div>
+                        <div>
+                            <p>创建时间</p>
+                            <div>
+                                <el-date-picker v-model="timeList" type="datetimerange" start-placeholder="开始时间"
+                                    end-placeholder="结束时间"/>
+                            </div>
+                        </div>
+                        <div>
+                            <el-button type="primary" :icon="Search" @click="search">搜索</el-button>
+                            <el-button :icon="Refresh" type="primary" plain="true">重置</el-button>
                         </div>
                     </div>
-                    <div>
-                        <p>用户角色</p>
-                        <el-dropdown @command="filterRole">
-                            <div class="checkgroup">
-                                <p>{{ selectRole }}</p>
-                                <div></div>
-                            </div>
-                            <template #dropdown>
-                                <el-dropdown-menu>
-                                    <el-dropdown-item command="0">全部</el-dropdown-item>
-                                    <el-dropdown-item command="1">系统管理员</el-dropdown-item>
-                                    <el-dropdown-item command="2">管理员</el-dropdown-item>
-                                    <el-dropdown-item command="3">普通用户</el-dropdown-item>
-                                </el-dropdown-menu>
-                            </template>
-                        </el-dropdown>
-                    </div>
-                    <div>
-                        <p>状态</p>
-                        <el-dropdown @command="filterStatus">
-                            <div class="checkgroup">
-                                <p>{{ selectStatus }}</p>
-                                <div></div>
-                            </div>
-                            <template #dropdown>
-                                <el-dropdown-menu>
-                                    <el-dropdown-item command="2">全部</el-dropdown-item>
-                                    <el-dropdown-item command="1">启用</el-dropdown-item>
-                                    <el-dropdown-item command="0">禁用</el-dropdown-item>
-                                </el-dropdown-menu>
-                            </template>
-                        </el-dropdown>
-                    </div>
-                    <div>
-                        <p>创建时间</p>
-                        <div></div>
-                    </div>
-                    <div>
-                        <el-button type="primary" :icon="Search">搜索</el-button>
-                        <el-button :icon="Refresh" type="primary" plain="true">重置</el-button>
-                    </div>
-                    <div>
-                        <el-button type="primary" :icon="Plus">添加</el-button>
-                        <el-button type="danger" :icon="Delete" plain="true">删除</el-button>
+                    <div class="filter_right">
+                        <div>
+                            <el-button type="primary" :icon="Plus">添加</el-button>
+                            <el-button type="danger" :icon="Delete" plain="true">删除</el-button>
+                        </div>
                     </div>
                 </div>
                 <div class="lists">
@@ -460,6 +478,7 @@ onMounted(() => {
         justify-content: center;
         align-items: center;
         z-index: 999;
+
         p {
             width: 42px;
             height: 20px;
@@ -882,6 +901,7 @@ onMounted(() => {
 
         .main {
             flex: 1;
+
             .process {
                 height: 50px;
                 box-sizing: border-box;
@@ -911,122 +931,133 @@ onMounted(() => {
             }
 
             .filter {
-                height: 60px;
                 display: flex;
-                align-items: center;
+                justify-content: space-between;
 
-                >div {
+                .filter_left {
+                    // height: 60px;
                     display: flex;
                     align-items: center;
-                    justify-content: space-between;
-                    height: 50px;
-
-                    >p {
-                        font-family: 思源黑体;
-                        font-size: 14px;
-                        font-weight: normal;
-                        line-height: normal;
-                        letter-spacing: 0px;
-                        color: #3D3D3D;
-                        margin-left: 8px;
-                    }
-                }
-
-                >div:nth-child(1) {
-                    width: 200px;
+                    flex-wrap: wrap;
 
                     >div {
-                        width: 100px;
-                        height: 32px;
-                        border-radius: 4px;
-                        opacity: 1;
-                        background: #FFFFFF;
-                        box-sizing: border-box;
-                        border: 1px solid #CBD5E0;
-
-                        >input {
-                            width: 90%;
-                            height: 100%;
-                            border: none;
-                            outline: none;
-                            box-shadow: none;
-                            margin: 0 5%;
-                        }
-
-                        input::placeholder {
-                            font-family: 思源黑体;
-                            font-size: 12px;
-                            font-weight: normal;
-                            line-height: normal;
-                            letter-spacing: 0px;
-                            color: #909AAA;
-                        }
-                    }
-                }
-
-                >div:nth-child(2),
-                >div:nth-child(3) {
-                    width: 140px;
-                    .checkgroup {
-                        width: 70px;
-                        height: 32px;
-                        border-radius: 4px;
-                        opacity: 1;
                         display: flex;
                         align-items: center;
-                        justify-content: space-around;
-                        background: #FFFFFF;
-                        box-sizing: border-box;
-                        border: 1px solid #CBD5E0;
+                        justify-content: space-between;
+                        height: 50px;
+                        padding: 0 10px;
 
                         >p {
                             font-family: 思源黑体;
-                            font-size: 12px;
+                            font-size: 14px;
                             font-weight: normal;
                             line-height: normal;
                             letter-spacing: 0px;
-                            color: #909AAA;
-                            height: 15px;
-                            width: 50px;
-                            overflow: hidden;
+                            color: #3D3D3D;
+                            margin-left: 8px;
                         }
+                    }
+
+                    >div:nth-child(1) {
+                        width: 160px;
 
                         >div {
-                            width: 9px;
-                            height: 6px;
-                            background-image: url('@/assets/images/arrow-bottom.svg');
-                            background-size: contain;
-                            background-repeat: no-repeat;
+                            width: 100px;
+                            height: 32px;
+                            border-radius: 4px;
+                            opacity: 1;
+                            background: #FFFFFF;
+                            box-sizing: border-box;
+                            border: 1px solid #CBD5E0;
+
+                            >input {
+                                width: 90%;
+                                height: 100%;
+                                border: none;
+                                outline: none;
+                                box-shadow: none;
+                                margin: 0 5%;
+                            }
+
+                            input::placeholder {
+                                font-family: 思源黑体;
+                                font-size: 12px;
+                                font-weight: normal;
+                                line-height: normal;
+                                letter-spacing: 0px;
+                                color: #909AAA;
+                            }
                         }
                     }
-                }
 
-                >div:nth-child(3) {
-                    width: 110px;
-                }
+                    >div:nth-child(2),
+                    >div:nth-child(3) {
+                        width: 140px;
 
-                >div:nth-child(4) {
-                    width: 264px;
+                        .checkgroup {
+                            width: 70px;
+                            height: 32px;
+                            border-radius: 4px;
+                            opacity: 1;
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-around;
+                            background: #FFFFFF;
+                            box-sizing: border-box;
+                            border: 1px solid #CBD5E0;
 
-                    >div {
-                        width: 190px;
-                        height: 32px;
-                        border-radius: 4px;
-                        box-sizing: border-box;
-                        border: 1px solid #CBD5E0;
+                            >p {
+                                font-family: 思源黑体;
+                                font-size: 12px;
+                                font-weight: normal;
+                                line-height: normal;
+                                letter-spacing: 0px;
+                                color: #909AAA;
+                                height: 15px;
+                                width: 50px;
+                                overflow: hidden;
+                            }
+
+                            >div {
+                                width: 9px;
+                                height: 6px;
+                                background-image: url('@/assets/images/arrow-bottom.svg');
+                                background-size: contain;
+                                background-repeat: no-repeat;
+                            }
+                        }
+                    }
+
+                    >div:nth-child(3) {
+                        width: 110px;
+                    }
+
+                    >div:nth-child(4) {
+                        // width: 264px;
+
+                        >div {
+                            margin-left: 10px;
+                            display: flex;
+                            align-items: center;
+                            height: 32px;
+                            border: 0;
+                        }
+                    }
+
+                    >div:nth-child(5) {
+                        margin-left: 5px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: flex-end;
                     }
                 }
 
-                >div:nth-child(5),
-                >div:nth-child(6) {
-                    margin-left: 5px;
+                .filter_right {
+                    width: 300px;
+                    margin-top: 20px;
                     display: flex;
+                    flex-direction: column;
                     align-items: center;
-                    justify-content: flex-end;
-                }
-
-                >div:nth-child(6) {
-                    margin-left: 10px;
                 }
             }
 
@@ -1034,7 +1065,7 @@ onMounted(() => {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                height: 68vh;
+                height: 58vh;
 
                 >div {
                     width: 99%;

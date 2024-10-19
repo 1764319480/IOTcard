@@ -3,7 +3,8 @@ import { defineStore } from 'pinia';
 // @ts-ignore
 import axios from '@/utils/request';
 export const userStore = defineStore('user', () => {
-  const user = ref();
+  const user = ref();// 用户信息
+  const userList = ref();// 用户列表
   const sessionId = ref();
   // 获取验证码
   const getCaptcha = async () => {
@@ -27,8 +28,8 @@ export const userStore = defineStore('user', () => {
       sessionId: sessionId.value,
       verifyCode
     })
-    if(res.data.success) {
-      document.cookie = `token=${res.data.data}`
+    if(res.data.success) {2*60*60
+      document.cookie = `token=${res.data.data}; max-age=7200`
       getUserInfo();
       return 1;
     }else {
@@ -71,6 +72,16 @@ export const userStore = defineStore('user', () => {
       return res.data.message;
     }
   }
+  // 获取用户列表
+  const getUserList = async (condition: object) => {
+    const res = await axios.post('/api/api/user/list',condition);
+    if(res.data.success) {
+      userList.value = res.data.data.list;
+      return 1;
+    } else {
+      return res.data.message;
+    }
+  }
   // 退出登录
   const exitLogin = () => {
     user.value = '';
@@ -79,7 +90,7 @@ export const userStore = defineStore('user', () => {
     sessionStorage.clear();
   }
 
-  return { user, sessionId, login, getCaptcha, getUserInfo, updateUserInfo, updatePassword, exitLogin }
+  return { user, sessionId, login, getCaptcha, getUserInfo, updateUserInfo, updatePassword, exitLogin, getUserList }
 },{
   persist: true
   }

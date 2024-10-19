@@ -118,6 +118,16 @@ const changeUserName = async () => {
     }
 }
 // 提交数据
+let timer:any = null;// 提交按钮节流
+const slowSubmit = () => {
+    if(timer) {
+      return;
+    }
+    timer = setTimeout(() => {
+      submit();
+      timer = null;
+    }, 1000)
+}
 const submit = () => {
     if(showSettingOption.value) {
         changeUserName();
@@ -330,7 +340,7 @@ const submit = () => {
                     </div>
                     <div class="list_button">
                         <div class="point-cursor" @click="closeBackground">取消</div>
-                        <div class="point-cursor" @click="submit">保存</div>
+                        <div class="point-cursor" @click="slowSubmit">保存</div>
                     </div>
                 </div>
             </div>
@@ -350,7 +360,7 @@ const submit = () => {
     }
 
     .point-cursor {
-        cursor: pointer;
+        cursor: default;
     }
 
     .background {

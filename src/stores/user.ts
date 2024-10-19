@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 // @ts-ignore
 import axios from '@/utils/request';
 export const userStore = defineStore('user', () => {
-  const user = ref('user');
+  const user = ref();
   const sessionId = ref();
   // 获取验证码
   const getCaptcha = async () => {
@@ -29,12 +29,37 @@ export const userStore = defineStore('user', () => {
     })
     if(res.data.success) {
       document.cookie = `token=${res.data.data}`
+      getUserInfo();
       return 1;
     }else {
       return res.data.message;
     }
   }
-  return { user, sessionId, login, getCaptcha }
+  // 获取用户信息
+  const getUserInfo = async () => {
+    const res = await axios.get('/api/api/user/my_profile');
+    if(res.data.success) {
+      user.value = res.data.data;
+      return 1;
+    } else {
+      return res.data.message;
+    }
+  }
+  // 修改用户信息
+  const updateUserInfo = async (userName:string) => {
+    const res = await axios.post('/api/api/user/update',{
+      userId: user.value.id,
+      userName,
+      status: user.value.status
+    })
+    if(res.data.success) {
+      user.value.userName = userName;
+      return 1;
+    } else {
+      return res.data.message;
+    }
+  }
+  return { user, sessionId, login, getCaptcha, getUserInfo, updateUserInfo }
 },{
   persist: true
   }

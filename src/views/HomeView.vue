@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Plus, Refresh, Search, Delete, Warning } from '@element-plus/icons-vue'
+import { Plus, Refresh, Search, Delete, Warning } from '@element-plus/icons-vue';
+// @ts-ignore
+import { userStore } from '@/stores/user';
+import { ElMessage } from 'element-plus';
+const userData = userStore();
 // 显示遮罩层
 const showBackground = ref(false);
 // 显示选项
@@ -31,6 +35,7 @@ const setting_select = (option: string) => {
     }
 }
 // 基本变量
+const userName = ref(userData.user.userName);
 const old_pwd = ref('');
 const alert_oldpwd = ref('');
 const new_pwd = ref('');
@@ -97,6 +102,27 @@ const checkPwd = (option: string) => {
     }
 
 }
+// 修改昵称/用户名
+const changeUserName = async () => {
+    const data = await userData.updateUserInfo(userName.value);
+    if(data === 1) {
+        ElMessage({
+            message: '修改成功',
+            type: 'success'
+        })
+    } else {
+        ElMessage({
+            message: data,
+            type: 'error'
+        })
+    }
+}
+// 提交数据
+const submit = () => {
+    if(showSettingOption.value) {
+        changeUserName();
+    }
+}
 </script>
 <template>
     <div class="content" @click="showOptions(false, $event)">
@@ -106,7 +132,7 @@ const checkPwd = (option: string) => {
             <div class="table" v-show="options">
                 <div>
                     <div></div>
-                    <p>用户名</p>
+                    <p>{{ userData.user.userName || '未登录' }}</p>
                 </div>
                 <div :class="showSetting ? 'select_div point-cursor' : 'point-cursor'" @click="select_setting">
                     <div></div>
@@ -264,7 +290,7 @@ const checkPwd = (option: string) => {
                         <div>
                             <p>昵称</p>
                             <div>
-                                <input type="text">
+                                <input type="text" v-model="userName">
                             </div>
                         </div>
                         <div></div>
@@ -304,7 +330,7 @@ const checkPwd = (option: string) => {
                     </div>
                     <div class="list_button">
                         <div class="point-cursor" @click="closeBackground">取消</div>
-                        <div class="point-cursor">保存</div>
+                        <div class="point-cursor" @click="submit">保存</div>
                     </div>
                 </div>
             </div>
@@ -337,7 +363,7 @@ const checkPwd = (option: string) => {
         display: flex;
         justify-content: center;
         align-items: center;
-
+        z-index: 999;
         p {
             width: 42px;
             height: 20px;
@@ -602,8 +628,8 @@ const checkPwd = (option: string) => {
         .table {
             position: absolute;
             float: right;
-            top: 50px;
-            right: 21px;
+            top: 45px;
+            right: 0;
             width: 193px;
             height: 130px;
             border-radius: 4px;
@@ -615,15 +641,16 @@ const checkPwd = (option: string) => {
             >div {
                 display: flex;
                 align-items: center;
+
             }
 
             >div:hover {
                 background: rgba(89, 149, 253, 0.071);
-                cursor: pointer;
+                cursor: default;
             }
 
             p {
-                width: 42px;
+                width: 100px;
                 height: 20px;
                 opacity: 1;
                 font-family: Source Han Serif CN;

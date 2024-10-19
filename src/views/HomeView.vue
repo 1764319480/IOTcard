@@ -6,6 +6,8 @@ import md5 from 'crypto-js/md5';
 // @ts-ignore
 import { userStore } from '@/stores/user';
 import { ElMessage } from 'element-plus';
+// @ts-ignore
+import router from '@/router';
 const userData = userStore();
 // 显示遮罩层
 const showBackground = ref(false);
@@ -192,6 +194,18 @@ onMounted(() => {
     }
     keyEnter();
 })
+// 退出登录
+const exitLogin = () => {
+    ElMessage({
+        message: '您已退出登录',
+        type: 'warning'
+    })
+    setTimeout(() => {
+        userData.exitLogin();
+        router.push('/login');
+    },500)
+    
+}
 </script>
 <template>
     <div class="content" @click="showOptions(false, $event)">
@@ -207,7 +221,7 @@ onMounted(() => {
                     <div></div>
                     <p>设置</p>
                 </div>
-                <div>
+                <div @click="exitLogin">
                     <div></div>
                     <p>退出</p>
                 </div>

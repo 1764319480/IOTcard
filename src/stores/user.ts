@@ -71,8 +71,15 @@ export const userStore = defineStore('user', () => {
       return res.data.message;
     }
   }
+  // 退出登录
+  const exitLogin = () => {
+    user.value = '';
+    sessionId.value = '';
+    document.cookie = 'token' + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/';
+    sessionStorage.clear();
+  }
 
-  return { user, sessionId, login, getCaptcha, getUserInfo, updateUserInfo, updatePassword }
+  return { user, sessionId, login, getCaptcha, getUserInfo, updateUserInfo, updatePassword, exitLogin }
 },{
   persist: true
   }

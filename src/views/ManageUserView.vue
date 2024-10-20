@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import { Plus, Refresh, Search, Delete, Warning } from '@element-plus/icons-vue';
 // @ts-ignore
 import { userStore } from '@/stores/user';
@@ -88,20 +88,6 @@ const new_userName = ref();
 const new_role = ref();
 const fix_pwd = '12345678';
 const centerDialogVisible = ref(false);
-//批量添加enter点击事件
-onMounted(() => {
-    function keyEnter() {
-        const inputs = document.querySelectorAll('input');
-        inputs.forEach(node => {
-            node.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    node.blur();
-                }
-            })
-        })
-    }
-    keyEnter();
-})
 </script>
 
 <template>

@@ -30,14 +30,14 @@ export const userStore = defineStore('user', () => {
     })
     if(res.data.success) {2*60*60
       document.cookie = `token=${res.data.data}; max-age=7200`
-      getUserInfo();
+      getPersonInfo();
       return 1;
     }else {
       return res.data.message;
     }
   }
-  // 获取用户信息
-  const getUserInfo = async () => {
+  // 获取个人信息
+  const getPersonInfo = async () => {
     const res = await axios.get('/api/api/user/my_profile');
     if(res.data.success) {
       user.value = res.data.data;
@@ -47,7 +47,7 @@ export const userStore = defineStore('user', () => {
     }
   }
   // 修改用户信息
-  const updateUserInfo = async (userId: string, userName:string, status: number) => {
+  const updatePersonInfo = async (userId: string, userName:string, status: number) => {
     const res = await axios.post('/api/api/user/update',{
       userId,
       userName,
@@ -91,7 +91,7 @@ export const userStore = defineStore('user', () => {
     sessionStorage.clear();
   }
 
-  return { user, sessionId, userList, login, getCaptcha, getUserInfo, updateUserInfo, updatePassword, exitLogin, getUserList }
+  return { user, sessionId, userList, login, getCaptcha, getPersonInfo, updatePersonInfo, updatePassword, exitLogin, getUserList }
 },{
   persist: true
   }

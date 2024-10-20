@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onBeforeMount, onMounted, ref } from 'vue';
 import { Plus, Refresh, Search, Delete, Warning } from '@element-plus/icons-vue';
 // @ts-ignore
 import md5 from 'crypto-js/md5';
@@ -45,7 +45,7 @@ const setting_select = (option: string) => {
     }
 }
 // 基本变量
-const userName = ref(userData.user.userName);
+const userName = ref('用户名');
 const old_pwd = ref('');
 const alert_oldpwd = ref('');
 const new_pwd = ref('');
@@ -119,7 +119,7 @@ const checkPwd = (option: string) => {
 }
 // 修改昵称/用户名
 const changeUserName = async () => {
-    const data = await userData.updateUserInfo(userData.user.id, userName.value, userData.user.status);
+    const data = await userData.updatePersonInfo(userData.user.id, userName.value, userData.user.status);
     if (data === 1) {
         ElMessage({
             message: '修改成功',
@@ -286,8 +286,19 @@ onMounted(() => {
     }
     keyEnter();
 })
+//进入页面前获取一次数据
+onBeforeMount(async () => {
+    const data = await userData.getPersonInfo();
+    if(data === 1) {
+        userName.value = userData.user.userName;
+    }else {
+        ElMessage({
+            message: data,
+            type: 'error'
+        })
+    }
+})
 </script>
-
 <template>
     <div class="content" @click="showOptions(false, $event)">
         <div class="header">

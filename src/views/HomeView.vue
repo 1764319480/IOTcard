@@ -296,6 +296,10 @@ onBeforeMount(async () => {
             message: data,
             type: 'error'
         })
+        setTimeout(() => {
+           router.push('/login') 
+        }, 500);
+        
     }
 })
 </script>

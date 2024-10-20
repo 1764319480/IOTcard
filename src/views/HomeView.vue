@@ -7,7 +7,11 @@ import { userStore } from '@/stores/user';
 import { ElMessage } from 'element-plus';
 // @ts-ignore
 import router from '@/router';
+import { useRoute } from 'vue-router';
 const userData = userStore();
+// 获取页面路由
+const route = useRoute();
+const currentPath = ref(route.path);
 // 显示遮罩层
 const showBackground = ref(false);
 // 显示选项
@@ -251,25 +255,32 @@ onBeforeMount(async () => {
                     </div>
                     <div></div>
                 </div>
-                <div class="manage_user select_manage">
-                    <p>用户管理</p>
-                </div>
-                <div class="manage_role">
-                    <p>角色管理</p>
-                </div>
+                <router-link to="/home/user">
+                    <div class="manage_user">
+                        用户管理
+                    </div> 
+                </router-link>
+                <router-link to="/home/role">
+                    <div class="manage_role">
+                        角色管理
+                    </div>
+                </router-link>
             </div>
             <div class="main">
                 <div class="process">
                     <div>系统管理</div>
                     <div>&nbsp;>&nbsp;</div>
-                    <div>用户管理</div>
+                    <div>{{ currentPath == '/home/user'? '用户管理' : '角色管理' }}</div>
                 </div>
-                <router-view v-slot="{ Component }">
-                    <keep-alive>
-                        <component :is="Component" :key="$route.path" v-if="$route.meta.keepAlive" />
-                    </keep-alive>
-                    <component :is="Component" :key="$route.path" v-if="!$route.meta.keepAlive" />
-                </router-view>
+                <div>
+                    <router-view v-slot="{ Component }">
+                        <keep-alive>
+                            <component :is="Component" :key="$route.path" v-if="$route.meta.keepAlive" />
+                        </keep-alive>
+                        <component :is="Component" :key="$route.path" v-if="!$route.meta.keepAlive" />
+                    </router-view>
+                </div>
+
                 <div class="foot">
                     <div>
                         <p>1</p>
@@ -350,7 +361,6 @@ onBeforeMount(async () => {
     height: 100vh;
     display: flex;
     flex-direction: column;
-
     .select_div {
         background: rgba(89, 149, 253, 0.071);
     }
@@ -722,12 +732,6 @@ onBeforeMount(async () => {
             opacity: 1;
             border-right: 1px solid #CBD5E0;
 
-            .select_manage {
-                color: #5995FD;
-                font-weight: bold;
-                background: rgba(89, 149, 253, 0.051);
-            }
-
             >div {
                 opacity: 1;
                 font-family: Source Han Serif CN;
@@ -776,18 +780,25 @@ onBeforeMount(async () => {
                     background-repeat: no-repeat;
                 }
             }
-
+            a {
+                display: block;
+                text-decoration: none;
+                color: #4E5D78;
+            }
             .manage_user,
             .manage_role {
-                width: 200px;
+                width: 160px;
                 height: 50px;
                 opacity: 1;
                 display: flex;
                 align-items: center;
-
-                p {
-                    margin-left: 40px;
-                }
+                padding-left: 40px;     
+                font-size: 14px; 
+            }
+            .router-link-active {
+                color: #5995FD;
+                font-weight: bold;
+                background: rgba(89, 149, 253, 0.051);
             }
         }
 

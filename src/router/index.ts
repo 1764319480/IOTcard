@@ -20,7 +20,7 @@ const router = createRouter({
       name: 'home',
       component: () => import('@/views/HomeView.vue'),
       meta: {
-        keepAlive: false
+        keepAlive: true
       },
       children: [
         {
@@ -31,6 +31,14 @@ const router = createRouter({
           path: '/home/user',
           name: 'user',
           component: () => import('@/views/ManageUserView.vue'),
+          meta: {
+            keepAlive: false
+          },
+        },
+        {
+          path: '/home/role',
+          name: 'role',
+          component: () => import('@/views/ManageRoleView.vue'),
           meta: {
             keepAlive: false
           },

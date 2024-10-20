@@ -77,7 +77,6 @@ export const userStore = defineStore('user', () => {
     const res = await axios.post('/api/api/user/list',condition);
     if(res.data.success) {
       userList.value = res.data.data.list;
-      console.log(userList.value)
       return 1;
     } else {
       return res.data.message;

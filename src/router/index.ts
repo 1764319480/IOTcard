@@ -21,7 +21,21 @@ const router = createRouter({
       component: () => import('@/views/HomeView.vue'),
       meta: {
         keepAlive: false
-      }
+      },
+      children: [
+        {
+          path: '/home',
+          redirect: '/home/user'
+        },
+        {
+          path: '/home/user',
+          name: 'user',
+          component: () => import('@/views/ManageUserView.vue'),
+          meta: {
+            keepAlive: false
+          },
+        }
+      ]
     }
   ]
 })
